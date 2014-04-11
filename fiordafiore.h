@@ -4,9 +4,10 @@
 
 // carrellata di alcuni notabili metodi per scrivere in C/C++ direttamente testo a video
 void scriviTesto() {
-	// "virgolette" e 'apici' non sono equivalenti in in Cuesto linCuaCCio
-	// "virgolette per una stringa di testo", 'a' pici per un singolo carattere
-
+	/* "virgolette" e 'apici' non sono equivalenti in in Cuesto linCuaCCio
+	 * "string literal" sono le sequenze di caratteri racchiusi tra virgolette
+	 * 'a' pici contengono un singolo carattere anche escapato '\n'
+	 */ 
 	// cout
 	cout << 'a'  << endl;	// 'a'
 	cout << 61  << endl;	// '61'
@@ -41,8 +42,16 @@ void scriviTesto() {
 }
 
 
-// collezione dei principali metodi per stoccare i caratteri in stringhe e ricavarne la dimensione
+// collezione dei principali metodi per stoccare i caratteri in stringhe e ricavarne la dimensione ecc.
 void testoInStringhe() {
+	/* puntatori (char*), c-string (char[]) e string attingono tutti alle string literal (se ho ben comprì)
+	 * ma le trattano in modi diversi
+	 * una string literal solitamente viene salvata in memoria di sola lettura
+	 * un puntatore char* potrebbe modificarla direttamente ma è illegale e porta a risultati indefiniti
+	 * la c-string è una copia (?) della string literal in un array di char
+	 * string ... bho
+	 */
+	
 	int carint;	// in un numero intero ci sta il numero ASCII di un carattere come 97 'a'
 	carint = 97;
 	cout << "int\t" << carint << endl;
@@ -81,9 +90,10 @@ void testoInStringhe() {
 	 * 'ciccio' non rappresenta tutto l'array, ma solo il puntatore (char*) al 1° carattere dell'array
 	 */
 	//char arrai[];	//	no. dimensione sconosciuta
+	//char arrai[6];	// ok array di 6 posti non inizializzato quindi accupati da spazzatura
 	//char arrai[] = "";	// ok
 	//char arrai[] = {};	// ok
-	//char arrai[] = "abcde";	// ok
+	char arrai[] = "abcde";	// ok
 	//char arrai[] = { 'a','b','c','d','e',0 };	// equivalente. NUL alla fine, altrimenti spesso aggiunge caratteri a cacchio
 	//char arrai[6] = { 'a','b','c','d','e',0 };	// ok. necessario specificare il NUL
 	//char arrai[1] = "a";	// no. stringa troppo lunga non c'è spazio per il carattere null
@@ -91,7 +101,7 @@ void testoInStringhe() {
 	//char arrai[2] = 'a';	// no gli apici da soli non vanno
 	//char arrai[2147483647]; // ok dimensione massima di un array sembra questa 2³¹ bytes (che dovrebbero essere 2 gigaByte)
 	                         // anche se poi compilatore lamenta che la funzione richiede troppa memoria
-	char arrai[256] = "abcde";	// ok. spazio allocato di 256 bytes anche se occupato da soli 5
+	//char arrai[256] = "abcde";	// ok. spazio allocato di 256 bytes anche se occupato da soli 5
 	//char arrai[6] = {0}; 	// ok crea un array di 6 caratteri nulli
 	//char arrai[6] = {'\0'}; 	// idem equivalente
 	cout << "array	" << arrai << endl;
@@ -111,24 +121,26 @@ void testoInStringhe() {
 	cout << endl;
 
 
-	/* puntatore a una c-string
-	 * la variabile 'pointer' contine l'INDIRIZZO di un singolo dato carattere (che magari è il primo di un array)
-	 * sembra equivalente al precedente... ma forse diverso?
-	 */
-	//char * pointer;	// ok dichiara un puntatore a un char* senza inizializzarlo, quindi poi contiene spazzatura casuale
-	//char * pointer = new char;	// ok. dichiara e inizializza indirizzo a un carattere che è sempre il 12 '♀' ma non so se è voluto
-	//char * pointer = new char();	// ok. inizializza il char con un carattere NUL
+	/* puntatore a una "string literal"
+	 * la variabile 'pointer' contine l'INDIRIZZO di un singolo carattere che è il primo di un sequenza terminata da NUL
+	 * assomiglia alla c-string ma la gran differenza è che la stringa è salvata in memoria di sola lettura
+	 * cercare di modificarla è illegale e porta a risultati indefiniti
+	 * 
+	 * Dichiarazione: */
+	//char * pointer;	// ok dichiara un puntatore con l'indirizzo di qualcuno e lo tratta come 'const char'
+					// senza inizializzarlo, ovvero contiene spazzatura casuale
+	//int * pointer;	// no. così il byte puntato è definito 'int' ma le funzioni seguenti si aspettano un 'const char'
+	//char * pointer = new char;	// ok. dichiara e inizializza indirizzo a c-string di un carattere che è sempre il 12 '♀' (non so quanto voluto) + NUL finale
+	//char * pointer = new char[6];	// ok idem inizializza una c-string col solo carattere 12'♀' + NUL finale
+	char * pointer = new char();	// ok. inizializza il char con un carattere NUL, pare il metodo più "corretto"
+				// pare che 'new' alloca un nuovo spazio in memoria, a differenza di una string literal che è di sola lettura
+	//char * pointer = 0;	// no. in teoria equivalente al precedente, compilazione ok ma poi programma inchioda
+	//char * pointer = '\0';	// idem programma inchioda, strano, non capisco
 	//char * pointer = new char(97);	// ok dichiara un puntatore con l'indirizzo di un carattere inizializzato come 'a'
-	//pointer = 'b';	// errore di sintassi: *pointer contiene un INDIRIZZO non un carattere
-	//*pointer = 'b';	// ok assegna 'b' all'indirizzo contenuto in *pointer
-	//pointer = "abcde";	// avviso: conversione deprecata da string constant a char*
 	//char * pointer = 'a';	// errore sintassi: non valida conversione da char a char*
 	//char * pointer = "a"; 	// avviso conversione deprecata da costante string a char*
-	//char * pointer = "abcde";	// avvisa conversione deprecata da stringa a char
-	//const char * pointer;	// ok idem lo dichiara senza inizializzarlo
-	//const char * pointer = "a";	// ok puntatore a una stringa
-	const char * pointer = "abcde";	// idem ok uguale
-	//const char * pointer = { 'a','b','c', 0 };	// errore sintassi: scalar object richiede initializer
+	//char *pointer = "abcde";	// ovunque lo suggeriscono ok, ma avvisa conversione deprecata da stringa a char
+	//cout <<"ok\n"; 
 	cout << "pointer	" << pointer << endl;
 	cout << "	strlen(pointer)	" << strlen(pointer) << " caratteri" << endl;
 	cout << "	sizeof(pointer)	" << sizeof(pointer) << " bytes" << endl;	// 4 bytes
@@ -136,10 +148,39 @@ void testoInStringhe() {
 	//cout << length(pointer); 	// no. length è funzione membro di char_traits
 	cout << "	decimali	";
 	for(size_t i=0; i <= strlen(pointer); ++i)
-		cout << static_cast<unsigned int>(pointer[i]) << " ";
+		cout << static_cast<unsigned int>(pointer[i]) << " "; cout<<endl;
+	cout << "	&pointer	" << &pointer << " indirizzo di pointer" <<endl;
+	cout << "	*pointer	" << *pointer << "	char a cui punta" << endl;
+	cout << "	(int)pointer	" << (int)pointer << " decimali, indirizzo a cui punta" << endl;	// indirizzo a cui punta pointer
+	/* 
+	 * Inizializzazione (o modifica della stringa pointer già inizializzato) */
+	//pointer = 'A';	// errore di sintassi: *pointer contiene un INDIRIZZO non un carattere
+	//pointer = "abcde";	// avviso: conversione deprecata da string constant a char*
+	pointer[0] = 'A';	// ok ma solo se è stato già inizializzato con uno dei 'new char...', altrimenti programma inchioda
+	//*pointer = 'A';	// ok assegna 'A' all'indirizzo contenuto in *pointer
+	//*pointer = "ABCDE";	// non valida conversione da const char* a char
+	//pointer[0] = "ABCDE";	// idem non valido
+		// non so come assegnare una STRINGA all'indirizzo del puntatore !!
+	cout << "	modificato	" << pointer <<endl;
 	cout << endl;
-	//pointer[0] = 'A';	// non si può assegnare a *pointer che è di sola lettura
-	cout << endl;
+
+
+	// puntatore COSTANTE a una c-string
+	// ma COSA è constante? il nome del puntatore, il suo indirizzo, l'indirizzo che contiene, l'indirizzo a cui punta, o ciò che ivi si trova???
+	//const char * constPtr;	// ok lo dichiara senza inizializzarlo quindi contiene caratteri casuali in numero casuale (fino al primo NUL)
+	//const char * constPtr = "a";	// ok puntatore a una stringa
+	const char * constPtr = "abcde";	// idem ok uguale
+	//const char * constPtr = { 'a','b','c', 0 };	// errore sintassi: scalar object richiede initializer
+	cout << "const pointer	" << constPtr << endl;
+	cout << "	strlen(cnt pointer)	" << strlen(constPtr) << " caratteri" << endl;
+	cout << "	sizeof(cnt pointer)	" << sizeof(constPtr) << " bytes" << endl;	// 4 bytes
+	cout << "	decimali	";
+	for(size_t i=0; i <= strlen(constPtr); ++i)
+		cout << static_cast<unsigned int>(constPtr[i]) << " ";
+	cout << endl << endl;
+	// modifica
+	//constPtr[0] = 'A';	// non si può assegnare all'indirizzo *constPtr che è di sola lettura
+	//cout << "	modificato	" << constPtr <<endl; cout << endl;
 
 	
 	// std::string
@@ -306,7 +347,7 @@ void prendeTestoInserito() {
    a differenza di cin>>string ammette anche un solo acapo, spazio o tabulazione. 	\n\
    il carattere estratto viene immagazzinato come numero int o carattere char	\n\
    estrae egregiamente i caratteri oltre 128 	\n";
-   // nella libreria <fstream>  forse di C più che C++       
+   // nella libreria <stdio.h>  e funzione di C più che C++       
 	int i = 0;	// ok il carattere viene poi mostrato con il corrispondente numero intero
 	//getchar(); 	// se c'è qualcosa in input buffer estrae il primo carattere eliminandolo (anche un solo '\n') e passa via
 					// altrimenti si ferma in attesa di input
@@ -497,7 +538,7 @@ void prendeTestoInseritoExra() {
 
 }
 
-// convertra i diversi tipi: int char string
+// converte tra i diversi tipi: int char string
 void conversioneCarattere() {
 	// convertire un char in string
 	char peppa = 'a'; 	// un semplicissimo char
@@ -563,6 +604,12 @@ void conversioneCarattere() {
 	cout << charint << endl; 	// scrive '-118' come static_cast
 
 
+	cout << "indirizzo esadecimale → int decimale\n";
+	int * puntatore;
+	// questo metodo con le parentesi prima si chiama cast
+	cout << &puntatore << " → " << (int)&puntatore <<endl;	// 0x22fe08 → 2293256
+	cout <<endl;
+	
 	
 	// da HINSTANCE a LPCSTR
 	// ovvero da pointer void*? a const char*

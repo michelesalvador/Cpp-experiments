@@ -127,7 +127,7 @@ void EOTesceWhile() {
 	// char 4 EOT (end of transmission)
 	// si ottiene digitando Crtl+D che a video scrive '^D' + un acapo
 	// in Lubuntu Ctrl+D non scrive niente ma ugualmente inserisce il carattere EOT che fa uscire dal programma
-	// in Windows è mostrato '♦' e incollandolo+acapo si ottiene lo stesso EOT int 4
+	// in console Windows codepage 850 è mostrato '♦' e incollandolo+acapo si ottiene lo stesso EOT int 4
 
 	// in un char
 	char chr;
@@ -169,9 +169,11 @@ void EOTesceWhile() {
 	}
 }
 
-// chiudi applicazione con carattere EOF End-Of-File int 3 inserito con Ctrl+C
-// In Windows appare '♥'
-// anche in Lubuntu Ctrl+C scrive '^C' probab inserisce EOF e il programma termina
+// chiudi applicazione con carattere EOF End-Of-File 
+// EOF è definito come un intero negativo
+// In Windows Ctrl+C inserisce int 3 che può apparire '♥' in codepage 850
+// in Lubuntu Ctrl+C scrive '^C' probab inserisce EOF e il programma termina
+// in realtà non ho ben capito se EOF è inserito da Ctrl+C o Ctrl+Z
 void endOfFile() {
 	char c;
 	c = cin.get();    	// premendo Ctrl+C inserisce EOF e va a capo
@@ -377,121 +379,6 @@ void tabellaPotenze() {
 }
 
 
-/* tabella con i 256 caratteri ANSI (o si dice ASCII Extended?)
- * in Windows quasi tutti 256 come carattere stampabili, anche i primi 16 
-	  ☺ ☻ ♥ ♦ ♣ ♠         ♂ ♀   ♫ ☼
-	► ◄ ↕ ‼ ¶ § ▬ ↨ ↑ ↓ → ← ∟ ↔ ▲ ▼
- * e la seconda metà tutti i caratteri accentati di Europa occidentale
- * Lubuntu mostra solo gli ASCII da 0 a 127, i primi 16 perlopiù quadratini col numero esadecimale
- * la seconda metà quasi tutti '�' tranne un paio vuoti
- */
-void profiloCarattere(string);
-void listaCaratteriCtrl();
-void listaCaratteri() {
-	cout << setw(4);
-	for (int e=0; e<16; e++)
-		cout << Esadecimi[e] << " ";
-	cout << endl;
-	
-	int n = 0;
-	for ( int y=0; y<16; y++ ) {
-		cout << endl << Esadecimi[y] << setw(3);
-		for (int x=0; x<16; x++) {
-			char c = n;
-			cout << svela(c,2) << " ";	// ok
-			n++;	// 0-255
-	}	}
-	cout << endl;
-	
-	cout << "inserisci carattere (a) esadecimale (61) o decimale (097)\n";
-	string coord;
-	char car;
-	int i;
-	//while ( !cin.eof() ) {	// ok! interrompe loop se trova EOF in cin
-	while (1) { // non valuta niente, solo loop
-		// riceve input utente
-		coord.clear(); i=0;
-		do {
-			car = cin.get();
-			if (car==4) break;	 	// EOT interrompe questo loop e il superiore
-			if (cin.eof()) break;	// EOF interrompe questo loop, il superiore e il macroprogramma
-			//cout << car ;
-			coord.resize(i+1);
-			coord[i] = car;
-			i++;
-		} while (car!='\n');	// '\n' è l'ultimo carattere che estrae
-		if(i>1) coord.resize(i-1);	// toglie \n finale a meno che è l'unico
-		//cout << " '" << coord << "' " << coord.size() << " char\n";	// ok
-
-		// uscita da questo sottoprogramma
-		if ( coord=="exit" || car==4 || cin.eof() ) 
-			break;	// "exit" e EOT escono da questo sottoprogramma, EOF anche dal macroprogramma
-
-		if (coord=="tabella"||coord=="tab") {
-			listaCaratteri();	// ridisegna char table
-			break; 	// interrompe il while in caso di uscita
-		}
-		if (coord=="c2") listaCaratteriCtrl();	// ok ma andrebbe messa meglio da qualche parte
-		
-		profiloCarattere(coord);
-		//cout << ":";
-}	}
-
-// disegna lista dei caratteri 0-31 con il corrispondente Ctrl+ABC
-void listaCaratteriCtrl() {
-	char ABC;
-	cout << "Ctrl+ ";
-	for (int i=65; i<=90; i++) {
-		ABC = i;
-		cout << ABC << " ";
-	}
-	cout << "? ? ? " << endl << setw(7);;
-	
-	for (int i=1; i<32; i++ ) {
-		ABC = i;
-		cout << svela(ABC,2) << " ";
-	}
-	cout << endl;
-}
-
-// riceve stringa e scrive dati sul carattere
-void profiloCarattere(string coord) {
-	string eventuale = coord;	// di passaggio per valutare cosa contiene coord
-	int decim;     	// numero decimale -128→255
-
-	// almeno 3 caratteri valuta se sono un numero decimale 
-	if (coord.size()>=3) {
-		eventuale.resize(3);
-		if ( (decim=stringaNumero(eventuale))!=-1 && decim<256 ) {	// intero tra 0 e 255
-			cout << "   decimale " << decim;
-			if (decim>=127) cout << " " << decim-0x100;	// inserisce eventuale signed
-			cout << endl;
-			cout << "  carattere '"<< static_cast<char>(decim) <<"'" << endl;
-			cout << "esadecimale " << decimaleEsadecimale(decim) << endl;
-			return;
-	}	}
-	// almeno 2 caratteri valuta se i primi 2 sono un esadecimale 
-	if (coord.size()>=2) {
-		eventuale.resize(2);
-		if ( (decim=esadecimaleDecimale(eventuale)) != -1 )	{ // inserito un esadecimale di 2 cifre e valido
-			cout << "esadecimale " << maiscolo(eventuale) << endl;	// ok
-			cout << "   decimale " << decim;
-			if (decim>127) cout << " " << decim-256;	// eventuale signed
-			cout << endl;
-			cout << "  carattere '"<< static_cast<char>(decim) <<"'" << endl;   // ok anche 128+
-			return;
-	}	}
-	// altrimenti considera il primo carattere inserito
-	{	cout << "  carattere '" << svela(coord[0]) << "'" << endl;
-		decim = coord[0];  	// ricava il SIGNED int del carattere ANSI
-		cout << "   decimale ";
-		if (decim<0) cout << decim+256 << " ";	// se è signed negativo -128→-1 infila l'unsigned 128→255
-		cout << decim << endl;	         	// e signed si sposta a destra
-		cout << "esadecimale " << decimaleEsadecimale(decim) << endl;
-	}
-}
-
-
 // esploriamo insieme 'cin' importantissimo comando di C++
 void tuttoCin() {
 /*	// l'oggetto 'std::cin' estrae i caratteri da una fonte input, tastiera o file che sia
@@ -528,3 +415,13 @@ void tuttoCin() {
 	// 'cin' è un oggetto della classe 'istream' e quindi ne eredita tutte le proprietà
 }
 
+
+void manipolaStringa(){
+	char * str = new char;
+	cout << str <<endl;
+	*str = 'A';
+	*(str+1) = '-';
+	*(str+2) = 'Z';
+	*(str+3) = 0;
+	cout << str <<endl;
+}

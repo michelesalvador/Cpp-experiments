@@ -1,19 +1,19 @@
-#include <iostream>
-#include <iomanip>	// setw()
-#include <cmath>	// pow()
-#include <ctime>	// time()
+#include <iostream>	// cin cout
+#include <fstream>	// puts() getchar() putchar()  ifstream ofstream EOF
 #include <cstring>	// strlen()
-#include <limits>	// ignore()
-#include <fstream>      // puts() getchar() putchar()  ifstream
-#include <sstream> // stringstream
-//#include <stdio.h>	// idem gli stessi
+#include <cmath>	// pow() round() floor()
+#include <iomanip>	// setw() setprecision()
+#include <sstream>	// stringstream
+#include <ctime>	// time()
+#include <climits>	// ignore()  Lubuntu INT_MAX lo trova qui, Windows in qualche altro forse addirittura iostream
+//#include <cstdlib>	// system("PAUSE")
+using namespace std;
+//#include <stdio.h>	// idem gli stessi puts() getchar() putchar()
 //#include <string>	// std::char_traits
 					// pare essere già incluso in <iostream>
-					// torno a includerlo ogni volta che ho un problema con le stringhe di testo...
-					// ma non risolve mai niente
+					// torno a includerlo ogni volta che ho un problema con le stringhe di testo... ma non risolve mai niente
 //#include <locale>	// forse serve per mostrare i caratteri accentati, lui solo non cabia nulla
 
-using namespace std;
 
 
 // prototipi di alcune funzioni di utilità definite in "utilita.h"
@@ -29,6 +29,8 @@ int altroInput();
 #include "utilita.h"
 #include "fiordafiore.h"
 #include "varie.h"
+#include "tabellacaratteri.h"
+#include "gestionefile.h"
 #include "inputbuffer.h"
 #include "problemi.h"
 #include "funzioni.h"
@@ -38,7 +40,9 @@ int altroInput();
 // cout << "cout deve stare in main() o in altra funzione, non può stare qui fuori all'aria aperta";
 
 int main() {
+	//caratteri256();
 	benvenuto();
 	//prendeTestoInserito();
+	//
 	return 0;
 }
