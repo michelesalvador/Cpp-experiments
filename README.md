@@ -11,4 +11,4 @@ Adesso il casino è capire come caz funziona sto gitubo.
 
 A settembre 2018 riprendo in mano questo repository giusto per allenarmi nelle complicate procedure di scaricamento e caricamento file in Github (stavolta con Eclipse), per impratichirmi in vista di una collaborazione con la libreria Java [FamilySearch Gedcom Parser](https://github.com/FamilySearch/Gedcom) che ho usato per la mia app Android (che ha tuttora il nome provvisorio di _Gedcomy_)
 
-Michele Salvador
+_Michele Salvador_, Italy
